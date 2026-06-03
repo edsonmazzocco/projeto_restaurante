@@ -1,6 +1,4 @@
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
-
+import db from "../config/database.js";
 
 class Mesa {
     constructor(nome) {
@@ -8,17 +6,16 @@ class Mesa {
     }
 
     async criar(){
-        const adapter = new JSONFile("database.json");
-        const db = new Low(adapter, { mesas: [], contador_mesas: 1 });
-        await db.read();
-
         const novaMesa = { id: db.data.contador_mesas++, nome: this.nome };
 
         db.data.mesas.push(novaMesa);
         await db.write();
     
         return novaMesa;
+    }
 
+    static async listarTodos() { // o método estático pode ser chamado diretamente pela classe, sem precisar instanciar
+        return db.data.mesas;
     }
 }
 
