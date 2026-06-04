@@ -21,16 +21,16 @@
   "menus": [
     {
       "id": 1,
-      "nome": "Refrigerante",
-      "preco": 7,
+      "nome": "Coca-Cola",
+      "preco": 8,
       "categoria": "Bebidas"
     },
     {
-      "id": 2,
+      "id": 5,
       "nome": "Batata Frita",
-      "preco": 25,
+      "preco": 15,
       "categoria": "Porções"
     }
   ],
-  "contador_menus": 3
+  "contador_menus": 6
 }

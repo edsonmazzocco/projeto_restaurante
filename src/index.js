@@ -1,8 +1,8 @@
 import express from 'express';
 
 import { PORTA } from './constants/server.js';
-import routesMesas from './routes/Mesas.js';
-import routesMenus from './routes/Menus.js';
+import routesMesas from './routes/routesMesas.js';
+import routesMenus from './routes/routesMenus.js';
 
 const app = express();
 app.use(express.json()); // Habilita o servidor para reconhecer formato JSON no body das requisições

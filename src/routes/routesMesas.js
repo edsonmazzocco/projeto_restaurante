@@ -18,8 +18,8 @@ routesMesas.post('/mesa', async (request, response) => {
         return response.status(BAD_REQUEST_ERROR).send({ error: 'Nome Inválido!' });
     } else {
         const mesa = new Mesa(dados.nome);
-        const data = await mesa.criar();
-        response.status(CREATED_SUCCESS_REQUEST).send(data);
+        const mesaCriada = await mesa.criar();
+        response.status(CREATED_SUCCESS_REQUEST).send(mesaCriada);
     }
 });
 

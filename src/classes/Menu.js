@@ -19,6 +19,32 @@ class Menu {
     static async listarTodos() {
         return db.data.menus;
     }
+
+    static menuExiste(id) {
+
+        return db.data.menus.some(menu => menu.id === id);
+    }
+
+    static async deletar(id) {
+        const menusFiltrados = db.data.menus.filter(menu => menu.id !== id);
+        db.data.menus = menusFiltrados;
+        await db.write();
+    }
+
+    static async atualizar(id, novosDados) {
+        const menusAtualizados = db.data.menus.map(menu => {
+            if (menu.id === id){
+                if (novosDados.nome !== undefined) menu.nome = novosDados.nome;
+                if (novosDados.preco !== undefined) menu.preco = novosDados.preco;
+                if (novosDados.categoria !== undefined) menu.categoria = novosDados.categoria;
+            }
+            return menu;
+        });
+
+        db.data.menus = menusAtualizados;
+        await db.write();
+        return db.data.menus.find(menu => menu.id === id);
+    }
 }
 
 export default Menu;
