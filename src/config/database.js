@@ -1,3 +1,5 @@
+/* SALVANDO OS DADOS EM UM ARQUIVO JSON */
+
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 
@@ -7,3 +9,4 @@ const db = new Low(adapter, { mesas: [], contador_mesas: 1, menus: [], contador_
 await db.read();
 
 export default db;
+

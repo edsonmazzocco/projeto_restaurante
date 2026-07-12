@@ -1,7 +1,7 @@
 import Router from "express";
 
 import Menu from "../classes/Menu.js";
-import { BAD_REQUEST_ERROR, CREATED_SUCCESS_REQUEST, SUCCESS_REQUEST, NOT_FOUND_ERROR} from "../constants/server.js";
+import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
 
 const routesMenus = new Router();
 
@@ -50,6 +50,6 @@ routesMenus.put('/menu/:id', async (request, response) => {
         const menuAtualizado = await Menu.atualizar(id, novosDados);
         response.status(SUCCESS_REQUEST).send(menuAtualizado);
     }
-});
+}); 
 
 export default routesMenus;
