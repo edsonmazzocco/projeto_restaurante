@@ -30,7 +30,13 @@
       "nome": "Batata Frita",
       "preco": 15,
       "categoria": "Porções"
+    },
+    {
+      "id": 6,
+      "nome": "Batata Frita",
+      "preco": 25,
+      "categoria": "Porções"
     }
   ],
-  "contador_menus": 6
+  "contador_menus": 7
 }

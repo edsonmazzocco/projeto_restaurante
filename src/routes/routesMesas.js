@@ -6,10 +6,10 @@ import { MesaEntity } from "../entidades/Mesa.js";
 import { AppDataSource } from "../config/database_postgres.js";
 
 const routesMesas = new Router();
+const mesaRepository = AppDataSource.getRepository(MesaEntity);
 
 //Rota para listar todas as mesas
 routesMesas.get('/mesas', async (request, response) => {
-    const mesaRepository = AppDataSource.getRepository(MesaEntity);
     response.status(SUCCESS_REQUEST).send(await mesaRepository.find());
 });
 
@@ -20,7 +20,6 @@ routesMesas.post('/mesa', async (request, response) => {
     if ((!dados.nome) || (typeof dados.nome !== 'string') || (dados.nome.trim() === '')) {
         return response.status(BAD_REQUEST_ERROR).send({ error: 'Nome Inválido!' });
     } else {
-        const mesaRepository = AppDataSource.getRepository(MesaEntity);
         const mesaCriada = await mesaRepository.save(dados);
         response.status(CREATED_SUCCESS_REQUEST).send(mesaCriada);
     }
