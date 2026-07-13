@@ -11,6 +11,7 @@ const menusRepository = AppDataSource.getRepository(MenusEntity);
 //Rota para listar todos os menus
 routesMenus.get('/menus', async (request, response) => {
     response.status(SUCCESS_REQUEST).send(await menusRepository.find());
+    // É o mesmo que: send(await AppDataSource.queries(`SELECT * FROM menus`));
 });
 
 //Rota para listar um menu específico por ID

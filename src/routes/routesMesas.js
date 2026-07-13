@@ -2,7 +2,7 @@ import Router from "express";
 
 import Mesa from "../classes/Mesa.js";
 import { BAD_REQUEST_ERROR, CREATED_SUCCESS_REQUEST, SUCCESS_REQUEST} from "../constants/server.js";
-import { MesaEntity } from "../entidades/Mesa.js";
+import { MesaEntity } from "../entidades/Mesas.js";
 import { AppDataSource } from "../config/database_postgres.js";
 
 const routesMesas = new Router();

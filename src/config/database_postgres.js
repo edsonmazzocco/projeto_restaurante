@@ -1,6 +1,7 @@
 import {DataSource} from "typeorm";
-import {MesaEntity} from "../entidades/Mesa.js";
+import {MesaEntity} from "../entidades/Mesas.js";
 import {MenusEntity} from "../entidades/Menus.js";
+import {ChefsEntity} from "../entidades/Chefs.js";
 
 export const AppDataSource = new DataSource({
     type: "postgres", // qual o banco de dados que será utilizado
@@ -11,5 +12,5 @@ export const AppDataSource = new DataSource({
     database: "Restaurante", // nome da base de dados
     synchronize: false,
     logging: true, // exibir os comandos SQL que estão sendo executados no console
-    entities: [MesaEntity, MenusEntity], // deixa a conexão do banco ciente da existência da entidade Mesa
+    entities: [MesaEntity, MenusEntity,ChefsEntity], // deixa a conexão do banco ciente da existência da entidade Mesa
 });
