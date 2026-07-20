@@ -1,8 +1,7 @@
-import Router from "express";
-
-import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
+import {Router} from "express";
 import { ChefsEntity } from "../entidades/Chefs.js";
 import { AppDataSource } from "../config/database_postgres.js";
+import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
 
 const routesChefs = new Router();
 const chefsRepository = AppDataSource.getRepository(ChefsEntity);
@@ -18,7 +17,7 @@ routesChefs.get('/chef/:id', async (request, response) => {
     const chef = await chefsRepository.findOneBy({ id: id });
 
     if (!chef) {
-        return response.status(NOT_FOUND_ERROR).send({ error: 'Chef não encontrado!' });
+        response.status(NOT_FOUND_ERROR).send({ error: 'Chef não encontrado!' });
     } else {
         response.status(SUCCESS_REQUEST).send(chef);
     }
@@ -50,6 +49,26 @@ routesChefs.delete('/chef/:id', async (request, response) => {
         response.status(SUCCESS_REQUEST).send({ message: 'Chef deletado com sucesso!' });
     }
 });
+
+// Rota Exemplo de Delete. Se o chef faz sobremesa, não pode ser deletado.
+/*
+routesChefs.delete('/chef/:id', async (request, response) => {
+    const id = request.params.id;
+
+    const chef = await chefsRepository.findOneBy({ id: id });
+    if (!chef) {
+        response.status(NOT_FOUND_ERROR).send({ error: 'Chef não encontrado!' });
+    } else {
+        if (chef.faz_sobremesa) {
+            response.status(BAD_REQUEST_ERROR).send({ error: 'Não é possível deletar um chef que faz sobremesa!' });
+        } else {
+            await chefsRepository.delete(id);
+            response.status(SUCCESS_REQUEST).send({ message: 'Chef deletado com sucesso!' });
+        }
+    }
+});
+*/
+
 
 //Rota para atualizar um chef
 routesChefs.put('/chef/:id', async (request, response) => {

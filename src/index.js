@@ -6,12 +6,16 @@ import {AppDataSource} from './config/database_postgres.js';
 import routesMesas from './routes/routesMesas.js';
 import routesMenus from './routes/routesMenus.js';
 import routesChefs from './routes/routesChefs.js';
+import routesPedidos from './routes/routesPedidos.js';
+import routesItemsPedidos from './routes/routesItemsPedidos.js';
 
 const app = express();
 app.use(express.json()); // Habilita o servidor para reconhecer formato JSON no body das requisições
 app.use(routesMesas); // Habilita as rotas de mesas
 app.use(routesMenus); // Habilita as rotas de menus
 app.use(routesChefs); // Habilita as rotas de chefs
+app.use(routesPedidos); // Habilita as rotas de pedidos
+app.use(routesItemsPedidos); // Habilita as rotas de items de pedidos
 
 try {
   await AppDataSource.initialize();

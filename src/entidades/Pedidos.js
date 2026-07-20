@@ -1,0 +1,47 @@
+import { EntitySchema } from "typeorm";
+
+export const PedidosEntity = new EntitySchema({
+  name: "Pedido",
+  tableName: "pedidos",
+  columns: {
+    id: {
+      type: "int",
+      primary: true,
+      generated: "increment",
+    },
+    nome_cliente: {
+      type: "varchar",
+      length: 100,
+      nullable: false,
+    },
+    mesa_id: {
+      type: "int",
+      nullable: false,
+    },
+    fechado: {
+      type: "boolean",
+      nullable: false,
+      default: false,
+    },
+    data: {
+      type: "date",
+      nullable: false,
+    },
+    total: {
+      type: "decimal",
+      precision: 10,
+      scale: 2,
+      nullable: true,
+    },
+    criado_em: {
+      type: "timestamp with time zone",
+      nullable: false,
+      default: () => "CURRENT_TIMESTAMP",
+    },
+    atualizado_em: {
+      type: "timestamp with time zone",
+      nullable: false,
+      default: () => "CURRENT_TIMESTAMP",
+    },
+  },
+});

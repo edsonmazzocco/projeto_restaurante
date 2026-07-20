@@ -1,7 +1,7 @@
 import {EntitySchema} from "typeorm";
 
 export const MenusEntity = new EntitySchema({
-    name: "Menus", //nome simbólico da entidade, usado internamente pelo TypeORM
+    name: "Menu", //nome simbólico da entidade, usado internamente pelo TypeORM
     tableName: "menus", //nome exato da tabela no banco de dados
     columns: {
         id: {
