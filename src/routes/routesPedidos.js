@@ -76,21 +76,36 @@ routesPedidos.get("/pedidos/:id", async (request, response) => {
 routesPedidos.put("/pedidos/:id/fechar", async (request, response) => {
     const idPedido = request.params.id;
 
-    //somar o total do pedido
-     const resultado = await AppDataSource
-    .createQueryBuilder()
-    .select("SUM(total_item)", "total")
-    .from((subQuery) => {
-        return subQuery
-        .select("ic.nome", "nome")
-        .addSelect("ip.quantidade * ic.preco", "total_item")
-        .from("items_pedidos", "ip")
-        .innerJoin("menus", "ic", "ip.item_cardapio_id = ic.id")
-        .where("ip.pedido_id = :pedidoId", { pedidoId: idPedido });
-    }, "pedido_items")
-    .getRawOne();
+    //verifica se o pedido existe
+    const pedidoEncontrado = await pedidoRepository.findOneBy({id: idPedido });
+    if (!pedidoEncontrado) {
+        response.status(NOT_FOUND_ERROR).send({ error: "O id do pedido não existe no banco de dados" });
+    } else {
 
-    response.send(resultado)
+        //soma o total dos itens do pedido e retorna um objeto com o nome "total" e o valor da soma
+        const resultado = await AppDataSource
+        .createQueryBuilder()
+        .select("SUM(total_item)", "total")
+        .from((subQuery) => {
+            return subQuery
+            .select("ic.nome", "nome")
+            .addSelect("ip.quantidade * ic.preco", "total_item")
+            .from("items_pedidos", "ip")
+            .innerJoin("menus", "ic", "ip.item_cardapio_id = ic.id")
+            .where("ip.pedido_id = :pedidoId", { pedidoId: idPedido });
+        }, "pedido_items")
+        .getRawOne();
+
+        //atualiza a coluna total da tabela pedidos e seta a coluna fechado como true
+        await pedidoRepository.update(idPedido, { total: resultado.total || 0, fechado: true }); // se o total for null, seta como 0
+
+        //atualiza a coluna reservado da tabela mesas para false
+        await mesaRepository.update(pedidoEncontrado.mesa_id, { reservado: false });
+
+        response.send({ message: "Pedido fechado com sucesso", total: resultado.total });
+    }
+
+    
 });
 
 
