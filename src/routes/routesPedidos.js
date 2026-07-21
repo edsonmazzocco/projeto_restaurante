@@ -70,6 +70,28 @@ routesPedidos.get("/pedidos/:id", async (request, response) => {
   }
 });
 
-export default routesPedidos;
-
 /* Uma rota POST para /pedidos que receba mesa_id, nome_cliente e data */
+
+/* Rota para fechar o pedido*/
+routesPedidos.put("/pedidos/:id/fechar", async (request, response) => {
+    const idPedido = request.params.id;
+
+    //somar o total do pedido
+     const resultado = await AppDataSource
+    .createQueryBuilder()
+    .select("SUM(total_item)", "total")
+    .from((subQuery) => {
+        return subQuery
+        .select("ic.nome", "nome")
+        .addSelect("ip.quantidade * ic.preco", "total_item")
+        .from("items_pedidos", "ip")
+        .innerJoin("menus", "ic", "ip.item_cardapio_id = ic.id")
+        .where("ip.pedido_id = :pedidoId", { pedidoId: idPedido });
+    }, "pedido_items")
+    .getRawOne();
+
+    response.send(resultado)
+});
+
+
+export default routesPedidos;
