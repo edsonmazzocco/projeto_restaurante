@@ -5,16 +5,19 @@ import { BAD_REQUEST_ERROR, CREATED_SUCCESS_REQUEST, SUCCESS_REQUEST} from "../c
 import { MesaEntity } from "../entidades/Mesas.js";
 import { AppDataSource } from "../config/database_postgres.js";
 
+import { asyncHandler } from "../middlewares/asyncHandler.js";
+
 const routesMesas = new Router();
 const mesaRepository = AppDataSource.getRepository(MesaEntity);
 
 //Rota para listar todas as mesas
-routesMesas.get('/mesas', async (request, response) => {
-    response.status(SUCCESS_REQUEST).send(await mesaRepository.find());
-});
+routesMesas.get("/mesas", asyncHandler(async (request, response) => {
+    response.send(await mesaRepository.find());
+  }),
+);
 
 //Rota para cadastrar mesas
-routesMesas.post('/mesa', async (request, response) => {
+routesMesas.post('/mesa', asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if ((!dados.nome) || (typeof dados.nome !== 'string') || (dados.nome.trim() === '')) {
@@ -23,6 +26,6 @@ routesMesas.post('/mesa', async (request, response) => {
         const mesaCriada = await mesaRepository.save(dados);
         response.status(CREATED_SUCCESS_REQUEST).send(mesaCriada);
     }
-});
+}));
 
 export default routesMesas;
