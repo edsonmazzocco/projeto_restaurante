@@ -6,6 +6,7 @@ import { MenusEntity } from "../entidades/Menus.js";
 import { AppDataSource } from "../config/database_postgres.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import { verifyIdExistsHandler } from "../middlewares/verifyIdExistsHandler.js";
+import { validateUpdateMenu } from "../middlewares/validations/menus/validateUpdateMenu.js";
 
 const routesMenus = new Router();
 const menusRepository = AppDataSource.getRepository(MenusEntity);
@@ -53,38 +54,15 @@ routesMenus.delete('/menu/:id',
 
 //Rota para atualizar um menu
 routesMenus.put('/menu/:id', 
-    verifyIdExistsHandler(MenusEntity, "Menu"),
+    verifyIdExistsHandler(MenusEntity, "Menu"), // verifica se o ID existe antes de atualizar
+    validateUpdateMenu, // valida os dados antes de atualizar
     asyncHandler(async (request, response) => {
     const id = parseInt(request.params.id);
     const novosDados = request.body;
 
-    if (novosDados.hasOwnProperty('nome')) {
-        if (!novosDados.nome || typeof novosDados.nome !== 'string' || novosDados.nome.trim() === '') {
-            return response.status(BAD_REQUEST_ERROR).send({ error: 'Nome Inválido!' });
-        }
-    }
-
-    if (novosDados.hasOwnProperty('preco')) {
-        if (typeof novosDados.preco !== 'number' || novosDados.preco < 0) {
-            return response.status(BAD_REQUEST_ERROR).send({ error: 'Preço Inválido!' });
-        }
-    }
-
-    if (novosDados.hasOwnProperty('categoria')) {
-        if (!novosDados.categoria || typeof novosDados.categoria !== 'string' || novosDados.categoria.trim() === '') {
-            return response.status(BAD_REQUEST_ERROR).send({ error: 'Categoria Inválida!' });
-        }
-    }
-
-    if (novosDados.hasOwnProperty('tamanho')) {
-        if (novosDados.tamanho !== "P" && novosDados.tamanho !== "M" && novosDados.tamanho !== "G") {
-            return response.status(BAD_REQUEST_ERROR).send({ error: 'Tamanho Inválido! Valores aceitos: P, M ou G' });
-        }
-    }
-
     await menusRepository.update(id, novosDados);
     const menuAtualizado = await menusRepository.findOneBy({ id });
-    return response.status(SUCCESS_REQUEST).send(menuAtualizado);
+    response.status(SUCCESS_REQUEST).send(menuAtualizado);
 }));
 
 export default routesMenus;
