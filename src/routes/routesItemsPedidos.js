@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AppDataSource } from "../config/database_postgres.js";
 import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 
 import { ItemPedidoEntity } from "../entidades/Items_pedidos.js";
 import { PedidosEntity } from "../entidades/Pedidos.js";
@@ -11,7 +12,7 @@ const itemPedidoRepository = AppDataSource.getRepository(ItemPedidoEntity);
 const pedidoRepository = AppDataSource.getRepository("Pedido");
 const menuRepository = AppDataSource.getRepository("Menu");
 
-routesItemsPedidos.post("/items-pedidos", async (request, response) => {
+routesItemsPedidos.post("/items-pedidos", asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if (dados.menus_id !== undefined) {
@@ -33,6 +34,6 @@ routesItemsPedidos.post("/items-pedidos", async (request, response) => {
         response.status(CREATED_SUCCESS_REQUEST).send(itemAdicionado);
     }
 
-});
+}));
 
 export default routesItemsPedidos;

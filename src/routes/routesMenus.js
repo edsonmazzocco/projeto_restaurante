@@ -4,18 +4,19 @@ import Menu from "../classes/Menu.js";
 import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
 import { MenusEntity } from "../entidades/Menus.js";
 import { AppDataSource } from "../config/database_postgres.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 
 const routesMenus = new Router();
 const menusRepository = AppDataSource.getRepository(MenusEntity);
 
 //Rota para listar todos os menus
-routesMenus.get('/menus', async (request, response) => {
+routesMenus.get('/menus', asyncHandler(async (request, response) => {
     response.status(SUCCESS_REQUEST).send(await menusRepository.find());
     // É o mesmo que: send(await AppDataSource.queries(`SELECT * FROM menus`));
-});
+}));
 
 //Rota para listar um menu específico por ID
-routesMenus.get('/menu/:id', async (request, response) => {
+routesMenus.get('/menu/:id', asyncHandler(async (request, response) => {
     const id = parseInt(request.params.id);
     const menu = await menusRepository.findOneBy({ id: id });
 
@@ -24,10 +25,10 @@ routesMenus.get('/menu/:id', async (request, response) => {
     } else {
         response.status(SUCCESS_REQUEST).send(menu);
     }
-});
+}));
 
 //Rota para cadastrar menus
-routesMenus.post('/menu', async (request, response) => {
+routesMenus.post('/menu', asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if ((!dados.nome) || (typeof dados.nome !== 'string') || (dados.nome.trim() === '')) {
@@ -42,10 +43,10 @@ routesMenus.post('/menu', async (request, response) => {
         const menuCriado = await menusRepository.save(dados);
         response.status(CREATED_SUCCESS_REQUEST).send(menuCriado);
     } 
-});
+}));
 
 //Rota para deletar um menu
-routesMenus.delete('/menu/:id', async (request, response) => {
+routesMenus.delete('/menu/:id', asyncHandler(async (request, response) => {
     const id = parseInt(request.params.id);
 
     const menu = await menusRepository.findOneBy({ id: id });
@@ -55,10 +56,10 @@ routesMenus.delete('/menu/:id', async (request, response) => {
         await menusRepository.delete(id);
         response.status(SUCCESS_REQUEST).send({ message: 'Menu deletado com sucesso!' });
     }
-});
+}));
 
 //Rota para atualizar um menu
-routesMenus.put('/menu/:id', async (request, response) => {
+routesMenus.put('/menu/:id', asyncHandler(async (request, response) => {
     const id = parseInt(request.params.id);
     const novosDados = request.body;
 
@@ -94,6 +95,6 @@ routesMenus.put('/menu/:id', async (request, response) => {
     await menusRepository.update(id, novosDados);
     const menuAtualizado = await menusRepository.findOneBy({ id });
     return response.status(SUCCESS_REQUEST).send(menuAtualizado);
-});
+}));
 
 export default routesMenus;

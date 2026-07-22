@@ -3,77 +3,57 @@ import { AppDataSource } from "../config/database_postgres.js";
 import { PedidosEntity } from "../entidades/Pedidos.js";
 import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
 import { MesaEntity } from "../entidades/Mesas.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 
 const routesPedidos = new Router();
 const pedidoRepository = AppDataSource.getRepository(PedidosEntity);
 const mesaRepository = AppDataSource.getRepository(MesaEntity);
 
-routesPedidos.post("/pedidos", async (request, response) => {
-  try {
-    const dados = request.body;
-    /* Validacao AQUI */
-    const mesa = await mesaRepository.findOneBy({ id: dados.mesa_id });
+routesPedidos.post("/pedidos", asyncHandler(async (request, response) => {
+  const dados = request.body;
+  /* Validacao AQUI */
+  const mesa = await mesaRepository.findOneBy({ id: dados.mesa_id });
 
-    if (mesa.reservado === true) {
-      response.status(409).send({ error: "A mesa já está reservada" });
-    } else {
-      const novoPedido = await pedidoRepository.save(dados);
-      await mesaRepository.update(dados.mesa_id, { reservado: true });
+  if (mesa.reservado === true) {
+    response.status(409).send({ error: "A mesa já está reservada" });
+  } else {
+    const novoPedido = await pedidoRepository.save(dados);
+    await mesaRepository.update(dados.mesa_id, { reservado: true });
 
-      response.status(CREATED_SUCCESS_REQUEST).send(novoPedido);
-    }
-  } catch (error) {
-    console.log(error.message);
-    response
-      .status(INTERNAL_SERVER_ERROR)
-      .send({ error: "Não foi possivel cadastrar um pedido no momento " });
+    response.status(CREATED_SUCCESS_REQUEST).send(novoPedido);
   }
-});
+}));
 
 /* Fazer uma rota que lista todos pedidos */
-routesPedidos.get("/pedidos", async (request, response) => {
-  try {
-    const todosPedidos = await pedidoRepository.find({
-      relations: { mesa: true }, // faz o join com tabela mesas
-    });
-    response.send(todosPedidos);
-  } catch (error) {
-    console.log(error);
-    response
-      .status(INTERNAL_SERVER_ERROR)
-      .send({ error: "Nao foi possivel listar todos os pedidos no momento" });
-  }
-});
+routesPedidos.get("/pedidos", asyncHandler(async (request, response) => {
+  const todosPedidos = await pedidoRepository.find({
+    relations: { mesa: true }, // faz o join com tabela mesas
+  });
+  response.send(todosPedidos);
+}));
 
 /* Fazer uma rota que lista que um pedido pelo ID */
-routesPedidos.get("/pedidos/:id", async (request, response) => {
-  try {
-    const id = request.params.id;
+routesPedidos.get("/pedidos/:id", asyncHandler(async (request, response) => {
+  const id = request.params.id;
 
-    const pedidoEncontrado = await pedidoRepository.findOne({
-      where: { id },
-      relations: { mesa: true }, // faz o join com tabela mesas
-    });
+  const pedidoEncontrado = await pedidoRepository.findOne({
+    where: { id },
+    relations: { mesa: true }, // faz o join com tabela mesas
+  });
 
-    if (pedidoEncontrado) {
-      response.send(pedidoEncontrado);
-    } else {
-      response
-        .status(NOT_FOUND_ERROR)
-        .send({ error: "Nao foi encontrado pedido com esse Id" });
-    }
-  } catch (error) {
-    console.log(error);
-    response.status(INTERNAL_SERVER_ERROR).send({
-      error: "Nao foi possivel listar os dados desse pedido no momento",
-    });
+  if (pedidoEncontrado) {
+    response.send(pedidoEncontrado);
+  } else {
+    response
+      .status(NOT_FOUND_ERROR)
+      .send({ error: "Nao foi encontrado pedido com esse Id" });
   }
-});
+}));
 
 /* Uma rota POST para /pedidos que receba mesa_id, nome_cliente e data */
 
 /* Rota para fechar o pedido*/
-routesPedidos.put("/pedidos/:id/fechar", async (request, response) => {
+routesPedidos.put("/pedidos/:id/fechar", asyncHandler(async (request, response) => {
     const idPedido = request.params.id;
 
     //verifica se o pedido existe
@@ -106,7 +86,7 @@ routesPedidos.put("/pedidos/:id/fechar", async (request, response) => {
     }
 
     
-});
+}));
 
 
 export default routesPedidos;
