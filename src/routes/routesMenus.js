@@ -5,6 +5,7 @@ import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_
 import { MenusEntity } from "../entidades/Menus.js";
 import { AppDataSource } from "../config/database_postgres.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
+import { verifyIdExistsHandler } from "../middlewares/verifyIdExistsHandler.js";
 
 const routesMenus = new Router();
 const menusRepository = AppDataSource.getRepository(MenusEntity);
@@ -16,15 +17,10 @@ routesMenus.get('/menus', asyncHandler(async (request, response) => {
 }));
 
 //Rota para listar um menu específico por ID
-routesMenus.get('/menu/:id', asyncHandler(async (request, response) => {
-    const id = parseInt(request.params.id);
-    const menu = await menusRepository.findOneBy({ id: id });
-
-    if (!menu) {
-        return response.status(NOT_FOUND_ERROR).send({ error: 'Menu não encontrado!' });
-    } else {
-        response.status(SUCCESS_REQUEST).send(menu);
-    }
+routesMenus.get('/menu/:id',
+    verifyIdExistsHandler(MenusEntity, "Menu"),
+    asyncHandler(async (request, response) => {
+        response.status(SUCCESS_REQUEST).send(request.registro);
 }));
 
 //Rota para cadastrar menus
@@ -46,20 +42,19 @@ routesMenus.post('/menu', asyncHandler(async (request, response) => {
 }));
 
 //Rota para deletar um menu
-routesMenus.delete('/menu/:id', asyncHandler(async (request, response) => {
-    const id = parseInt(request.params.id);
+routesMenus.delete('/menu/:id',
+    verifyIdExistsHandler(MenusEntity, "Menu"),
+    asyncHandler(async (request, response) => {
+        const id = parseInt(request.params.id);
 
-    const menu = await menusRepository.findOneBy({ id: id });
-    if (!menu) {
-        return response.status(NOT_FOUND_ERROR).send({ error: 'Menu não encontrado!' });
-    } else {
         await menusRepository.delete(id);
         response.status(SUCCESS_REQUEST).send({ message: 'Menu deletado com sucesso!' });
-    }
 }));
 
 //Rota para atualizar um menu
-routesMenus.put('/menu/:id', asyncHandler(async (request, response) => {
+routesMenus.put('/menu/:id', 
+    verifyIdExistsHandler(MenusEntity, "Menu"),
+    asyncHandler(async (request, response) => {
     const id = parseInt(request.params.id);
     const novosDados = request.body;
 
@@ -85,11 +80,6 @@ routesMenus.put('/menu/:id', asyncHandler(async (request, response) => {
         if (novosDados.tamanho !== "P" && novosDados.tamanho !== "M" && novosDados.tamanho !== "G") {
             return response.status(BAD_REQUEST_ERROR).send({ error: 'Tamanho Inválido! Valores aceitos: P, M ou G' });
         }
-    }
-
-    const menu = await menusRepository.findOneBy({ id });
-    if (!menu) {
-        return response.status(NOT_FOUND_ERROR).send({ error: 'Menu não encontrado!' });
     }
 
     await menusRepository.update(id, novosDados);
