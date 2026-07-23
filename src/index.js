@@ -9,6 +9,7 @@ import routesMenus from './routes/routesMenus.js';
 import routesChefs from './routes/routesChefs.js';
 import routesPedidos from './routes/routesPedidos.js';
 import routesItemsPedidos from './routes/routesItemsPedidos.js';
+import authRoutes from './routes/auth.routes.js';
 
 import { captureLog } from './middlewares/capturelog.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -18,6 +19,7 @@ app.use(express.json()); // Habilita o servidor para reconhecer formato JSON no 
 
 app.use(captureLog); // Middleware para capturar logs de todas as requisições
 
+app.use(authRoutes); // Habilita as rotas de autenticação
 app.use(routesMesas); // Habilita as rotas de mesas
 app.use(routesMenus); // Habilita as rotas de menus
 app.use(routesChefs); // Habilita as rotas de chefs

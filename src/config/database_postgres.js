@@ -4,6 +4,7 @@ import {MenusEntity} from "../entidades/Menus.js";
 import {ChefsEntity} from "../entidades/Chefs.js";
 import {PedidosEntity} from "../entidades/Pedidos.js";
 import {ItemPedidoEntity} from "../entidades/Items_pedidos.js";
+import {UsuarioEntity} from "../entidades/Usuario.js";
 
 export const AppDataSource = new DataSource({
     type: "postgres", // qual o banco de dados que será utilizado
@@ -14,5 +15,5 @@ export const AppDataSource = new DataSource({
     database: "Restaurante", // nome da base de dados
     synchronize: false,
     logging: true, // exibir os comandos SQL que estão sendo executados no console
-    entities: [MesaEntity, MenusEntity,ChefsEntity,PedidosEntity, ItemPedidoEntity], // deixa a conexão do banco ciente da existência da entidade Mesa
+    entities: [MesaEntity, MenusEntity,ChefsEntity,PedidosEntity, ItemPedidoEntity, UsuarioEntity], // deixa a conexão do banco ciente da existência da entidade Mesa
 });
