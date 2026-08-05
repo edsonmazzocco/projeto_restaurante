@@ -4,6 +4,8 @@ import { AppDataSource } from "../config/database_postgres.js";
 import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR} from "../constants/server.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import { verifyIdExistsHandler } from "../middlewares/verifyIdExistsHandler.js";
+import { autorizarHandler } from "../middlewares/autorizarHandler.js";
+import { ROLES } from "../constants/roles.js";
 
 const routesChefs = new Router();
 const chefsRepository = AppDataSource.getRepository(ChefsEntity);
