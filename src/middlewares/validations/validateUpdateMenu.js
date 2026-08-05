@@ -1,6 +1,6 @@
 //validações da rota de update de menu
 
-import { BAD_REQUEST_ERROR } from "../../../constants/server.js";
+import { BAD_REQUEST_ERROR } from "../../constants/server.js";
 
 export function validateUpdateMenu(request, response, next) {
     const novosDados = request.body;

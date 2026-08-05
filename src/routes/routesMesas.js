@@ -6,18 +6,24 @@ import { MesaEntity } from "../entidades/Mesas.js";
 import { AppDataSource } from "../config/database_postgres.js";
 
 import { asyncHandler } from "../middlewares/asyncHandler.js";
+import { autorizarHandler } from "../middlewares/autorizarHandler.js";
+import { ROLES } from "../constants/roles.js";
 
 const routesMesas = new Router();
 const mesaRepository = AppDataSource.getRepository(MesaEntity);
 
 //Rota para listar todas as mesas
-routesMesas.get("/mesas", asyncHandler(async (request, response) => {
+routesMesas.get("/mesas", 
+    autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     response.send(await mesaRepository.find());
   }),
 );
 
 //Rota para cadastrar mesas
-routesMesas.post('/mesa', asyncHandler(async (request, response) => {
+routesMesas.post('/mesa',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if ((!dados.nome) || (typeof dados.nome !== 'string') || (dados.nome.trim() === '')) {

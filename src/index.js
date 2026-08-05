@@ -13,6 +13,7 @@ import authRoutes from './routes/auth.routes.js';
 
 import { captureLog } from './middlewares/capturelog.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { validateJwtHandler } from './middlewares/validateJwtHandler.js';
 
 const app = express();
 app.use(express.json()); // Habilita o servidor para reconhecer formato JSON no body das requisições
@@ -20,6 +21,9 @@ app.use(express.json()); // Habilita o servidor para reconhecer formato JSON no 
 app.use(captureLog); // Middleware para capturar logs de todas as requisições
 
 app.use(authRoutes); // Habilita as rotas de autenticação
+
+app.use(validateJwtHandler); // Middleware para validar o token JWT em todas as rotas abaixo
+
 app.use(routesMesas); // Habilita as rotas de mesas
 app.use(routesMenus); // Habilita as rotas de menus
 app.use(routesChefs); // Habilita as rotas de chefs

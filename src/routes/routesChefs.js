@@ -9,19 +9,24 @@ const routesChefs = new Router();
 const chefsRepository = AppDataSource.getRepository(ChefsEntity);
 
 //Rota para listar todos os chefs
-routesChefs.get('/chefs', asyncHandler(async (request, response) => {
+routesChefs.get('/chefs',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     response.status(SUCCESS_REQUEST).send(await chefsRepository.find());
 }));
 
 //Rota para listar um chef específico por ID
 routesChefs.get('/chef/:id',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
     verifyIdExistsHandler(ChefsEntity, "Chef"),
     asyncHandler(async (request, response) => {
         response.status(SUCCESS_REQUEST).send(request.registro);
 }));
 
 //Rota para cadastrar um chef
-routesChefs.post('/chef', asyncHandler(async (request, response) => {
+routesChefs.post('/chef',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if ((!dados.nome) || (typeof dados.nome !== 'string') || (dados.nome.trim() === '')) {
@@ -36,6 +41,7 @@ routesChefs.post('/chef', asyncHandler(async (request, response) => {
 
 //Rota para deletar um chef
 routesChefs.delete('/chef/:id',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
     verifyIdExistsHandler(ChefsEntity, "Chef"),
     asyncHandler(async (request, response) => {
         const id = parseInt(request.params.id);
@@ -66,6 +72,7 @@ routesChefs.delete('/chef/:id', async (request, response) => {
 
 //Rota para atualizar um chef
 routesChefs.put('/chef/:id',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
     verifyIdExistsHandler(ChefsEntity, "Chef"),
     asyncHandler(async (request, response) => {
     const id = parseInt(request.params.id);

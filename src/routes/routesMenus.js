@@ -6,26 +6,33 @@ import { MenusEntity } from "../entidades/Menus.js";
 import { AppDataSource } from "../config/database_postgres.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import { verifyIdExistsHandler } from "../middlewares/verifyIdExistsHandler.js";
-import { validateUpdateMenu } from "../middlewares/validations/menus/validateUpdateMenu.js";
+import { validateUpdateMenu } from "../middlewares/validations/validateUpdateMenu.js";
+import { autorizarHandler } from "../middlewares/autorizarHandler.js";
+import { ROLES } from "../constants/roles.js";
 
 const routesMenus = new Router();
 const menusRepository = AppDataSource.getRepository(MenusEntity);
 
 //Rota para listar todos os menus
-routesMenus.get('/menus', asyncHandler(async (request, response) => {
+routesMenus.get('/menus',
+    autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.CHEF, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     response.status(SUCCESS_REQUEST).send(await menusRepository.find());
     // É o mesmo que: send(await AppDataSource.queries(`SELECT * FROM menus`));
 }));
 
 //Rota para listar um menu específico por ID
 routesMenus.get('/menu/:id',
+    autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.CHEF, ROLES.GERENTE),
     verifyIdExistsHandler(MenusEntity, "Menu"),
     asyncHandler(async (request, response) => {
         response.status(SUCCESS_REQUEST).send(request.registro);
 }));
 
 //Rota para cadastrar menus
-routesMenus.post('/menu', asyncHandler(async (request, response) => {
+routesMenus.post('/menu',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if ((!dados.nome) || (typeof dados.nome !== 'string') || (dados.nome.trim() === '')) {
@@ -44,6 +51,7 @@ routesMenus.post('/menu', asyncHandler(async (request, response) => {
 
 //Rota para deletar um menu
 routesMenus.delete('/menu/:id',
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
     verifyIdExistsHandler(MenusEntity, "Menu"),
     asyncHandler(async (request, response) => {
         const id = parseInt(request.params.id);
@@ -54,6 +62,7 @@ routesMenus.delete('/menu/:id',
 
 //Rota para atualizar um menu
 routesMenus.put('/menu/:id', 
+    autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
     verifyIdExistsHandler(MenusEntity, "Menu"), // verifica se o ID existe antes de atualizar
     validateUpdateMenu, // valida os dados antes de atualizar
     asyncHandler(async (request, response) => {

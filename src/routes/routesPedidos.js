@@ -5,12 +5,17 @@ import { SUCCESS_REQUEST, CREATED_SUCCESS_REQUEST, BAD_REQUEST_ERROR, NOT_FOUND_
 import { MesaEntity } from "../entidades/Mesas.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import { verifyIdExistsHandler } from "../middlewares/verifyIdExistsHandler.js";
+import { autorizarHandler } from "../middlewares/autorizarHandler.js";
+import { ROLES } from "../constants/roles.js";
 
 const routesPedidos = new Router();
 const pedidoRepository = AppDataSource.getRepository(PedidosEntity);
 const mesaRepository = AppDataSource.getRepository(MesaEntity);
 
-routesPedidos.post("/pedidos", asyncHandler(async (request, response) => {
+/* Rota para cadastrar Pedidos, que receba mesa_id, nome_cliente e data */
+routesPedidos.post("/pedidos",
+  autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.GERENTE),
+  asyncHandler(async (request, response) => {
   const dados = request.body;
   /* Validacao AQUI */
   const mesa = await mesaRepository.findOneBy({ id: dados.mesa_id });
@@ -26,7 +31,9 @@ routesPedidos.post("/pedidos", asyncHandler(async (request, response) => {
 }));
 
 /* Fazer uma rota que lista todos pedidos */
-routesPedidos.get("/pedidos", asyncHandler(async (request, response) => {
+routesPedidos.get("/pedidos",
+  autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.CHEF, ROLES.GERENTE),
+  asyncHandler(async (request, response) => {
   const todosPedidos = await pedidoRepository.find({
     relations: { mesa: true }, // faz o join com tabela mesas
   });
@@ -35,6 +42,7 @@ routesPedidos.get("/pedidos", asyncHandler(async (request, response) => {
 
 /* Fazer uma rota que lista que um pedido pelo ID */
 routesPedidos.get("/pedidos/:id",
+  autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.CHEF, ROLES.GERENTE),
   verifyIdExistsHandler(PedidosEntity, "Pedido"),
   asyncHandler(async (request, response) => {
     const pedidoEncontrado = await pedidoRepository.findOne({
@@ -45,10 +53,9 @@ routesPedidos.get("/pedidos/:id",
     response.send(pedidoEncontrado);
 }));
 
-/* Uma rota POST para /pedidos que receba mesa_id, nome_cliente e data */
-
 /* Rota para fechar o pedido*/
 routesPedidos.put("/pedidos/:id/fechar",
+  autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.GERENTE),
   verifyIdExistsHandler(PedidosEntity, "Pedido"),
   asyncHandler(async (request, response) => {
     const idPedido = Number(request.params.id);

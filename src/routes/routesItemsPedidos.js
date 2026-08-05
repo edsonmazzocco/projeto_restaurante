@@ -12,7 +12,9 @@ const itemPedidoRepository = AppDataSource.getRepository(ItemPedidoEntity);
 const pedidoRepository = AppDataSource.getRepository("Pedido");
 const menuRepository = AppDataSource.getRepository("Menu");
 
-routesItemsPedidos.post("/items-pedidos", asyncHandler(async (request, response) => {
+routesItemsPedidos.post("/items-pedidos",
+    autorizarHandler(ROLES.ADMIN, ROLES.GARCOM, ROLES.GERENTE),
+    asyncHandler(async (request, response) => {
     const dados = request.body;
 
     if (dados.menus_id !== undefined) {
