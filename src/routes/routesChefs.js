@@ -14,7 +14,7 @@ const chefsRepository = AppDataSource.getRepository(ChefsEntity);
 routesChefs.get('/chefs',
     autorizarHandler(ROLES.ADMIN, ROLES.GERENTE),
     asyncHandler(async (request, response) => {
-    response.status(SUCCESS_REQUEST).send(await chefsRepository.find());
+    response.status(SUCCESS_REQUESTEST).send(await chefsRepository.find());
 }));
 
 //Rota para listar um chef específico por ID

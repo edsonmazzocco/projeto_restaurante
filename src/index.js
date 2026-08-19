@@ -1,5 +1,7 @@
 import express from 'express';
 
+import cors from 'cors';
+
 import { PORTA } from './constants/server.js';
 
 import {AppDataSource} from './config/database_postgres.js';
@@ -15,7 +17,10 @@ import { captureLog } from './middlewares/capturelog.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { validateJwtHandler } from './middlewares/validateJwtHandler.js';
 
+
+
 const app = express();
+app.use(cors()); // Habilita o CORS para permitir requisições de diferentes origens
 app.use(express.json()); // Habilita o servidor para reconhecer formato JSON no body das requisições
 
 app.use(captureLog); // Middleware para capturar logs de todas as requisições
