@@ -44,4 +44,15 @@ export const PedidosEntity = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
     },
   },
+  relations: {
+    mesa: {
+      type: "many-to-one",
+      target: "Mesa",
+      joinColumn: {
+        name: "mesa_id",
+        referencedColumnName: "id",
+      },
+      nullable: false,
+    },
+  },
 });
